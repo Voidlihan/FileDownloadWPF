@@ -30,16 +30,20 @@ namespace PotokFileDownload
         }
 
         private void FileDownload(object sender, RoutedEventArgs e)
-        {            
+        {
+            loadProgressBar.IsIndeterminate = true;
             Thread thread = new Thread(FileLoading);
             thread.IsBackground = true;
-            thread.Priority = ThreadPriority.Normal;            
-            thread.Start();
+            thread.Priority = ThreadPriority.Lowest;
+            thread.Start(textBoxUrl.Text);
         }
         private void FileLoading(object url) {
             WebClient webClient = new WebClient();
             var res = webClient.DownloadString(url.ToString());
-            this.Dispatcher.BeginInvoke(DispatcherPriority.Normal { in });
+            Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate () {
+                loadProgressBar.IsIndeterminate = false;
+            });
+            MessageBox.Show("Загрузка выполнена!");
         }
     }
 }
